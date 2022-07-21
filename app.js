@@ -18,15 +18,30 @@ app.get("/todos", async (req, res) => {
 
     res.json(rows);
 })
+app.get("/todos/:id/", async (req, res) => {
+    const { id } = req.params;
 
-// app.get("/todos", function (req, res) {
-//     console.log("/todos 요청이 실행되었습니다.");
-//     res.send("HI111");
-// });
+    const [rows] = await pool.query(
+        `
+        SELECT *
+        FROM todo
+        WHERE id = ?
+        `,
+            [id]
+    );
+    if (rows.length === 0) {
+        res.status(404).json({
+            msg : "not found",
+        });
+        return;
+    }
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-})
+    res.json(rows[0]);
+});
+
+// app.get('/', (req, res) => {
+//   res.send('Hello World!');
+// })
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
